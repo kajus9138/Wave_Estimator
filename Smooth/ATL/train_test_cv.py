@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, make_scorer
 from sklearn.model_selection import cross_val_score, KFold, ParameterGrid
 import yaml
 
-with open("config.yml", 'r') as ymlfile:
+with open(r"C:\Users\ksilva\Documents\Wave_Estimator\Smooth\ATL\config.yml", 'r') as ymlfile:
     config = yaml.safe_load(ymlfile)
 
 def calculo_hs(y_test, y_pred):
@@ -41,7 +41,8 @@ def acc_scorer(target, y_test, y_pred):
 
 def train_test_rf(targets):
     df = pd.read_csv(config['dataset_path'], sep=',')
-    X = df.drop(['Hs', 'Tp', 'dir'], axis=1)
+    X = df.drop(['Hs', 'Tp', 'dir', 'Unnamed: 0', 'Unnamed: 0.1'], axis=1)
+    #print(X.shape)
 
     for target in targets:
         y = df[target]
@@ -49,7 +50,8 @@ def train_test_rf(targets):
 
         for params in param_grid:
             mlflow.set_tracking_uri("http://localhost:5000")
-            experiment_name = "FINEP_Espectral_Features_RF_cv"
+            experiment_name = "FINEP_smh02_RF_cv"
+            
             mlflow.set_experiment(experiment_name)
 
             with mlflow.start_run():
@@ -104,3 +106,4 @@ def train_test_rf(targets):
 
 # Executar a função com a lista de targets
 train_test_rf(targets=config['target'])
+
