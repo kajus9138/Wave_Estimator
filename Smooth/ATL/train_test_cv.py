@@ -41,8 +41,7 @@ def acc_scorer(target, y_test, y_pred):
 
 def train_test_rf(targets):
     df = pd.read_csv(config['dataset_path'], sep=',')
-    X = df.drop(['Hs', 'Tp', 'dir', 'Unnamed: 0', 'Unnamed: 0.1'], axis=1)
-    #print(X.shape)
+    X = df.drop(['Hs', 'Tp', 'dir', 'Unnamed: 0'], axis=1)
 
     for target in targets:
         y = df[target]
@@ -50,8 +49,9 @@ def train_test_rf(targets):
 
         for params in param_grid:
             mlflow.set_tracking_uri("http://localhost:5000")
-            experiment_name = "FINEP_smh02_RF_cv"
-            
+            #experiment_name = "FINEP_hd02_RF_cv"
+            experiment_name = "FINEP_pj01t_RF_cv"
+            #experiment_name = "FINEP_atl_fr_RF_cv"
             mlflow.set_experiment(experiment_name)
 
             with mlflow.start_run():
@@ -67,18 +67,35 @@ def train_test_rf(targets):
 
                 # Cálculo da acurácia usando o scorer personalizado
                 acc_scores = []
+                feature_importances_list = []  # Para armazenar as importâncias de todas as dobras
+                
                 for train_idx, test_idx in cv.split(X):
                     X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
                     y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
                     model.fit(X_train, y_train)
                     y_pred = model.predict(X_test)
                     acc_scores.append(acc_scorer(target, y_test, y_pred))
-                
+                    
+                    # Adiciona as feature importances da dobra atual
+                    feature_importances_list.append(model.feature_importances_)
+
                 # Média das métricas de validação cruzada
                 mae_avg = -np.mean(mae_scores)
                 mse_avg = -np.mean(mse_scores)
                 rmse_avg = np.mean(rmse_scores)
                 acc_avg = np.mean(acc_scores)
+
+                # Calcular a média das feature importances
+                mean_importances = np.mean(feature_importances_list, axis=0)
+                feature_importances_df = pd.DataFrame({
+                    "feature": X.columns,
+                    "importance": mean_importances
+                })
+                
+                # Salvar como artefato no MLflow
+                feature_importances_file = f"feature_importances_{target}.csv"
+                feature_importances_df.to_csv(feature_importances_file, index=False)
+                mlflow.log_artifact(feature_importances_file)
 
                 # Logar parâmetros e métricas no MLflow
                 mlflow.log_params(params)
@@ -103,7 +120,7 @@ def train_test_rf(targets):
                 print(f"MSE (Validação Cruzada): {mse_avg}")
                 print(f"RMSE (Validação Cruzada): {rmse_avg}")
                 print(f"Acurácia (Validação Cruzada): {acc_avg}")
+                print(f"Feature Importances salvas em: {feature_importances_file}")
 
 # Executar a função com a lista de targets
 train_test_rf(targets=config['target'])
-
