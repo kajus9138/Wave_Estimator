@@ -40,8 +40,9 @@ def acc_scorer(target, y_test, y_pred):
     return calculos[target](y_test, y_pred)
 
 def train_test_rf(targets):
-    df = pd.read_csv(config['dataset_path'], sep=',')
-    X = df.drop(['Hs', 'Tp', 'dir', 'Unnamed: 0'], axis=1)
+    df = pd.read_csv(config['dataset_path'], sep=',', index_col=None)
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
+    X = df.drop(['Hs', 'Tp', 'dir'], axis=1)
 
     for target in targets:
         y = df[target]
@@ -50,7 +51,7 @@ def train_test_rf(targets):
         for params in param_grid:
             mlflow.set_tracking_uri("http://localhost:5000")
             #experiment_name = "FINEP_hd02_RF_cv"
-            experiment_name = "FINEP_pj01t_RF_cv"
+            experiment_name = "FINEP_atlfr_RF_cv"
             #experiment_name = "FINEP_atl_fr_RF_cv"
             mlflow.set_experiment(experiment_name)
 
