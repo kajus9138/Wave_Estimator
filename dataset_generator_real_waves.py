@@ -72,9 +72,9 @@ def gera_espectros(diretorio):
     
     for idx, arquivo in enumerate(arquivos):
         
-        df = pd.read_csv(arquivo, on_bad_lines='warn', delim_whitespace=True, skiprows=[0])
-        #df = pd.read_csv(arquivo, sep=';') 
-        df = df[4000:] 
+        
+        df = pd.read_csv(arquivo, sep=';') 
+      
         
         
         #sway = df['Y.1'].values
@@ -108,6 +108,8 @@ def gera_espectros(diretorio):
         combined_matrix = np.vstack([matrix_real, matrix_imag])    
         combined_matrices[idx] = combined_matrix
 
+        print(combined_matrices.shape)
+
     return combined_matrices
 
 
@@ -137,6 +139,8 @@ def gera_features_estatisticas_espectrais(signal):
     
     df_features = pd.DataFrame(resultados)
     df_features.set_index('Onda', inplace=True)
+
+    print(df_features.head(1))
     
     return df_features
 
@@ -149,8 +153,12 @@ def gera_features_estatisticas(diretorio):
     for idx, arquivo in enumerate(arquivos):
         try:
             # Carregar o arquivo e ignorar as primeiras 4000 linhas
-            df = pd.read_csv(arquivo, on_bad_lines='warn', delim_whitespace=True, skiprows=[0])
-            df = df[4000:]
+           # df = pd.read_csv(arquivo, on_bad_lines='warn', delim_whitespace=True, skiprows=[0])
+            df = pd.read_csv(arquivo, sep=';')
+            df = df.loc[:, ~df.columns.str.contains("Unnamed")] 
+            print("criou df")
+            print(df)
+            #df = df[4000:]
             
             
             if df.empty:
@@ -158,7 +166,8 @@ def gera_features_estatisticas(diretorio):
                 continue
             
             # Considerar apenas as 6 primeiras colunas
-            df = df.iloc[:, 1:7]
+            #df = df.iloc[:, 0:7]
+            #df = df.iloc[:, 1:7] usado para os arquivos txt simulados
             
             features = {'Arquivo': os.path.basename(arquivo)}
             
@@ -182,8 +191,11 @@ def gera_features_estatisticas(diretorio):
             
             resultados.append(features)
 
+
+
         except Exception as e:
             print(f"Erro ao processar o arquivo {arquivo}: {e}")
+    
 
     return pd.DataFrame(resultados)
 
@@ -193,15 +205,18 @@ arquivos= glob.glob(os.path.join(diretorio_ondas, '*'))
 combinacoes_espectrais = gera_espectros(diretorio_ondas)
 features_espectrais = gera_features_estatisticas_espectrais(combinacoes_espectrais)
 df_features_estatisticas = gera_features_estatisticas(diretorio_ondas)
+
+print(df_features_estatisticas.head(1))
+
 df_features_estatisticas = pd.concat([features_espectrais, df_features_estatisticas], axis=1)
-df_features_estatisticas = df_features_estatisticas.T.drop_duplicates().T
+#df_features_estatisticas = df_features_estatisticas.T.drop_duplicates().T
 df_features_estatisticas.drop('Arquivo', inplace=True, axis=1)
 
 #targets = pd.read_csv(r'C:\Users\ksilva\Documents\Wave_Estimator\dados\processados/Ondas_PMG.csv', sep=';')
 
 #df_features_estatisticas = pd.concat([df_features_estatisticas,targets[['Hs', 'Tp', 'dir']]], axis=1)
 
-df_features_estatisticas.to_csv('dataset_02_atl_fr_val4_real.csv')
+df_features_estatisticas.to_csv('dataset_02_atl_fr_val4_26_27real.csv')
 
 #print(df_features_estatisticas)
 #print(len(df_features_estatisticas.columns))
