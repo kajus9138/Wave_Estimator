@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, make_scorer
 from sklearn.model_selection import cross_val_score, KFold, ParameterGrid
 import yaml
 
-with open(r"C:\Users\ksilva\Documents\Wave_Estimator\Smooth\ATL\config.yml", 'r') as ymlfile:
+with open(r"C:\Users\ksilva\Documents\Wave_Estimator\config.yml", 'r') as ymlfile:
     config = yaml.safe_load(ymlfile)
 
 def calculo_hs(y_test, y_pred):
@@ -49,9 +49,10 @@ def train_test_rf(targets):
         param_grid = ParameterGrid(config['param_grid'])
 
         for params in param_grid:
-            mlflow.set_tracking_uri("http://localhost:5000")
+            #mlflow.set_tracking_uri("http://localhost:5000")
+            mlflow.set_tracking_uri("http://localhost:8000")
             #experiment_name = "FINEP_hd02_RF_cv"
-            experiment_name = "FINEP_atlfr_RF_cv"
+            experiment_name = "FINEP_RF_new_hd_cv"
             #experiment_name = "FINEP_atl_fr_RF_cv"
             mlflow.set_experiment(experiment_name)
 
@@ -77,7 +78,7 @@ def train_test_rf(targets):
                     y_pred = model.predict(X_test)
                     acc_scores.append(acc_scorer(target, y_test, y_pred))
                     
-                    # Adiciona as feature importances da dobra atual
+                 
                     feature_importances_list.append(model.feature_importances_)
 
                 # Média das métricas de validação cruzada

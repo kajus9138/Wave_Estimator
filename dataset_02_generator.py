@@ -187,7 +187,7 @@ def gera_features_estatisticas(diretorio):
 
     return pd.DataFrame(resultados)
 
-diretorio_ondas = r'C:\Users\ksilva\Documents\Wave_Estimator\dados\processados\Ondas_reais_ago2024'
+diretorio_ondas = r'C:\Users\ksilva\Documents\Wave_Estimator\dados\processados\Ondas_atl_validacao4'
 arquivos= glob.glob(os.path.join(diretorio_ondas, '*'))
 
 combinacoes_espectrais = gera_espectros(diretorio_ondas)
@@ -197,11 +197,11 @@ df_features_estatisticas = pd.concat([features_espectrais, df_features_estatisti
 df_features_estatisticas = df_features_estatisticas.T.drop_duplicates().T
 df_features_estatisticas.drop('Arquivo', inplace=True, axis=1)
 
-#targets = pd.read_csv(r'C:\Users\ksilva\Documents\Wave_Estimator\dados\processados/Ondas_PMG.csv', sep=';')
+#targets = pd.read_csv(r'C:\Users\ksilva\Documents\Wave_Estimator\dados\processados/Ondas_atl_new_hd.csv', sep=';')
 
 #df_features_estatisticas = pd.concat([df_features_estatisticas,targets[['Hs', 'Tp', 'dir']]], axis=1)
 
-df_features_estatisticas.to_csv('dataset_02_atl_fr_val4_real.csv')
+df_features_estatisticas.to_csv('dataset_02_validacao4.csv')
 
 #print(df_features_estatisticas)
 #print(len(df_features_estatisticas.columns))
