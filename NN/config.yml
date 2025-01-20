@@ -1,36 +1,14 @@
-#dataset_path: c:\Users\ksilva\Documents\Wave_Estimator\Smooth\ATL/dataset_smh_01.csv
-#dataset_path: c:\Users\ksilva\Documents\Wave_Estimator\dados\processados/dataset_pj01_02.csv
 dataset_path: c:\Users\ksilva\Documents\Wave_Estimator\dados\processados/dataset_02_atl_new_hd.csv
 
 
 test_size: 0.8
 random_state: 40
-target: ['Hs', 'Tp', 'dir']
+#target: ['Hs', 'Tp', 'dir']
 #target: ['dir']
-#target: ['Hs']
-cv_splits: 5
-model_params:
-  #n_estimators: 30
-  random_state: 40
-  #criterion: 'squared_error'
-  #max_depth: 10
-  min_samples_split: 2
-  min_samples_leaf: 2
+target: ['Hs']
+#cv_splits: 5
+#model_params:
 
-param_grid:
-  
-  n_estimators: [50, 100] 
-  max_depth: [100, 1000]
-  min_samples_split: [2]
-  min_samples_leaf: [1]
-  
-
-  #n_estimators: [ 30, 50] 
-  #max_depth: [ 50, 100]
-  #min_samples_split: [2, 6]
-  #min_samples_leaf: [1, 2]
-  #criterion: ['squared_error', 'absolute_error']
-  criterion: ['absolute_error', 'squared_error']
 metrics:
   - mae
   - mse

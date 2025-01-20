@@ -63,20 +63,13 @@ def plot_cpsd(signal1, signal2, label1, label2, fs):
 
 
 def gera_espectros(diretorio):
-    arquivos = glob.glob(diretorio + '/*')
-    
+    arquivos = glob.glob(diretorio + '/*')  
     fs = 1.0 
     frequencies_rad = np.linspace(0.2,3,100)
-    combined_matrices = np.zeros((len(arquivos), 9, 100))
-    
-    
+    combined_matrices = np.zeros((len(arquivos), 9, 100))    
     for idx, arquivo in enumerate(arquivos):
-        
-        
-        df = pd.read_csv(arquivo, sep=';') 
-      
-        
-        
+              
+        df = pd.read_csv(arquivo, sep=';')        
         #sway = df['Y.1'].values
         sway = df['Y'].values
         heave = df['Z'].values
@@ -91,11 +84,9 @@ def gera_espectros(diretorio):
             (pitch, pitch)   # 6 (autoespectro)
         ]
         
-    
         matrix_real = np.zeros((6, 100))
         matrix_imag = np.zeros((3, 100))
-        
-        
+           
         for i, (sig1, sig2) in enumerate(signal_pairs):
             real_part, imag_part = compute_cpsd(sig1, sig2, fs, frequencies_rad)
             if i < 3:  # Para as 3 primeiras combinações, guardar parte real e imaginária
@@ -103,12 +94,9 @@ def gera_espectros(diretorio):
                 matrix_imag[i] = imag_part
             else:  # Para autoespectros, apenas a parte real
                 matrix_real[i] = real_part  
-        
-        
+          
         combined_matrix = np.vstack([matrix_real, matrix_imag])    
         combined_matrices[idx] = combined_matrix
-
-        print(combined_matrices.shape)
 
     return combined_matrices
 
